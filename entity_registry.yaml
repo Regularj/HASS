@@ -1,0 +1,80 @@
+sensor.temperature_158d0001100456:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: temperature158d0001100456
+sensor.illumination_158d0001e518a2:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: lux158d0001e518a2
+sensor.illumination_f0b429cc315f:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: illuminationf0b429cc315f
+sensor.temperature_158d00011172f3:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: temperature158d00011172f3
+sensor.humidity_158d0001100456:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: humidity158d0001100456
+sensor.temperature_158d00012bf206:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: temperature158d00012bf206
+sensor.humidity_158d00011172f3:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: humidity158d00011172f3
+sensor.humidity_158d00012bf206:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: humidity158d00012bf206
+sensor.temperature_158d00012914cb:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: temperature158d00012914cb
+sensor.humidity_158d00012914cb:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: humidity158d00012914cb
+light.gateway_light_f0b429cc315f:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: rgbf0b429cc315f
+binary_sensor.door_window_sensor_158d000153b0e1:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: status158d000153b0e1
+binary_sensor.motion_sensor_158d00010f859c:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: status158d00010f859c
+binary_sensor.motion_sensor_158d0001e518a2:
+  config_entry_id:
+  name:
+  platform: xiaomi_aqara
+  unique_id: status158d0001e518a2
+sensor.stephansiphone_battery_level:
+  config_entry_id:
+  name:
+  platform: ios
+  unique_id: level_stephans_iphone
+sensor.stephansiphone_battery_state:
+  config_entry_id:
+  name:
+  platform: ios
+  unique_id: state_stephans_iphone

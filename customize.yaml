@@ -1,0 +1,132 @@
+sensor.yr_humidity:
+  friendly_name: Luftfeuchtigkeit
+  icon: mdi:water-percent
+sensor.yr_temperature:
+  friendly_name: Aussentemperatur
+sensor.yr_wind_speed:
+  icon: mdi:weather-windy
+  friendly_name: Windgeschwindigkeit
+sun.sun:
+  friendly_name: Sonnenstand
+sensor.humidity_158d00011172f3:
+  icon: mdi:water-percent
+  friendly_name: Wohnzimmer Luftfeuchte
+sensor.temperature_158d00011172f3:
+  friendly_name: Wohnzimmer Temperatur
+sensor.humidity_158d0001100456:
+  icon: mdi:water-percent
+  friendly_name: Romy Luftfeuchte
+sensor.temperature_158d0001100456:
+  friendly_name: Romy Temperatur
+sensor.humidity_158d00012bf206:
+  icon: mdi:water-percent
+  friendly_name: Bad Feuchtigkeit
+sensor.temperature_158d00012bf206:
+  friendly_name: Bad Temperatur
+sensor.temperature_158d00012914cb:
+  friendly_name: Schlafzimmer Temperatur
+sensor.humidity_158d00012914cb:
+  icon: mdi:water-percent
+  friendly_name: Schlafzimmer Feuchtigkeit
+sensor.stephans_iphone_battery_level_2:
+  friendly_name: Stephans iPhone 6S Plus
+sensor.battery_applewatch:
+  friendly_name: Stephans Apple Watch 2
+sensor.yr_symbol:
+  friendly_name: Wettersymbol
+binary_sensor.door_window_sensor_158d000153b0e1:
+  friendly_name: Badfenster
+  icon: mdi:glassdoor
+sensor.privat:
+  icon: mdi:calendar
+sensor.geburtstagskalender:
+  icon: mdi:cake-variant
+sensor.feiertage:
+  icon: mdi:calendar
+sensor.muellabfuhr:
+  icon: mdi:delete-empty
+sensor.since_last_boot_templated:
+  friendly_name: Uptime
+  icon: mdi:clock-start
+sensor.dark_sky_summary:
+  friendly_name: aktuelles Wetter
+sensor.dark_sky_humidity:
+  friendly_name: Luftfeuchtigkeit
+sensor.dark_sky_temperature:
+  friendly_name: Außentemperatur
+sensor.dark_sky_wind_speed:
+  friendly_name: Windgeschwindigkeit
+sensor.dark_sky_wind_bearing:
+  friendly_name: Windrichtung
+sensor.dark_sky_hourly_summary:
+  friendly_name: 24h
+sensor.dark_sky_daily_summary:
+  friendly_name: 7 Tage
+sensor.dark_sky_apparent_temperature:
+  friendly_name: gefühlte Temperatur
+sensor.dark_sky_dew_point:
+  friendly_name: Taupunkt
+sensor.dark_sky_precip_intensity:
+  friendly_name: Intensität
+sensor.dark_sky_precip_probability:
+  friendly_name: Wahrscheinlichkeit
+sensor.dark_sky_cloud_coverage:
+  friendly_name: Wolkenbedeckung
+sensor.dark_sky_pressure:
+  friendly_name: Luftdruck
+light.wohnzimmer_licht:
+  show_last_changed: true
+light.romy_licht:
+  show_last_changed: true
+light.bad_licht:
+  show_last_changed: true
+light.speisesaal_licht:
+  show_last_changed: true
+light.gateway_light_f0b429cc315f:
+  show_last_changed: true
+  friendly_name: Nachtlicht
+device_tracker.androide3c5daf46596c063home:
+  friendly_name: Jule
+  icon: mdi:cellphone-android
+input_boolean.stephanishome:
+  friendly_name: Stephan (iPhone)
+  icon: mdi:cellphone-iphone
+device_tracker.androidf0f89b5be25f73echome:
+  friendly_name: Jules Arbeitshandy
+  icon: mdi:cellphone-android
+device_tracker.stephans_iphone:
+  friendly_name: Stephan
+  icon: mdi:cellphone-iphone
+binary_sensor.motion_sensor_158d00010f859c:
+  friendly_name: Bewegungsmelder Schlafzimmer
+binary_sensor.motion_sensor_158d0001e518a2:
+  friendly_name: Bewegungsmelder Flur
+sensor.illumination_f0b429cc315f:
+  friendly_name: Helligkeit
+  icon: mdi:lightbulb-outline
+switch.kaffeemaschine:
+  friendly_name: Kaffeemaschine
+  icon: mdi:coffee
+switch.bad_radio:
+  friendly_name: Badradio
+  icon: mdi:radio
+switch.speisesaal_radio:
+  friendly_name: Küchenradio
+  icon: mdi:radio
+climate.bad:
+  friendly_name: Badheizung
+sensor.luftdaten_sensor_temperature:
+  friendly_name: Temperatur (LD)
+sensor.luftdaten_sensor_humidity:
+  friendly_name: Luftfeuchte (LD)
+sensor.luftdaten_sensor_pm10:
+  friendly_name: Luftqualität (LD)
+sensor.hass_installed_version:
+  friendly_name: Installierte HASS-Version
+  icon: mdi:folder-download
+sensor.hass_latest_version:
+  friendly_name: Verfügbare HASS-Version
+  icon: mdi:github-circle
+device_tracker.galaxyj52016:
+  friendly_name: Jule
+  icon: mdi:cellphone-android

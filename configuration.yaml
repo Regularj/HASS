@@ -1,0 +1,512 @@
+homeassistant:
+# Name of the location where Home Assistant is running
+  name: Ostseebad Nienhagen
+# Location required to calculate the time the sun rises and sets
+  latitude: 54.154
+  longitude: 11.946
+# Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 2
+# metric for Metric, imperial for Imperial
+  unit_system: metric
+# Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Berlin
+
+##################################################
+#
+# vernünftige Namen der Komponenten
+#
+##################################################
+
+  customize: !include customize.yaml
+
+##################################################
+#
+# Show links to resources in log and frontend
+#
+##################################################
+
+#introduction:
+
+##################################################
+#
+# Enables the frontend, themes
+#
+##################################################
+
+frontend: !include frontend.yaml
+
+##################################################
+#
+# Enables configuration UI
+#
+##################################################
+config:
+
+
+
+http:
+  # Uncomment this to add a password (recommended!)
+  # api_password: !secret http
+  # Uncomment this if you are using SSL or running in Docker etc
+  # base_url: example.duckdns.org:8123
+
+#################################################
+#
+# Checks for available updates
+#
+#################################################
+updater:
+
+#################################################
+#
+# Discover some devices automatically
+#
+#################################################
+
+discovery:
+  ignore:
+    - philips_hue
+#################################################
+#
+# Allows you to issue voice commands from the frontend in enabled browsers
+#
+#################################################
+
+# conversation:
+
+#################################################
+#
+# Enables support for tracking state changes over time.
+#
+#################################################
+
+history:
+
+#################################################
+#
+# View all events in a logbook
+#
+#################################################
+
+logbook:
+logger:
+#  default: warning
+
+#################################################
+#
+# Alte Events, States löschen
+#
+#################################################
+
+recorder:
+  purge_interval: 1
+  purge_keep_days: 5
+
+#################################################
+#
+# Track the sun
+#
+#################################################
+sun:
+
+#################################################
+#
+# Sensoren
+#
+#################################################
+
+sensor: !include sensor.yaml
+
+#################################################
+#
+# Gruppen/Tabs
+#
+#################################################
+
+group: !include groups.yaml
+
+#################################################
+#
+# Lichter und Lampen
+#
+#################################################
+
+light:
+  - platform: limitlessled
+    bridges:
+      - host: 192.168.1.86
+        port: 5987
+        groups:
+        - number: 1
+          type: white
+          name: Bettlicht
+  - platform: yeelight
+    devices:
+      192.168.1.155:
+        name: Wohnzimmer Licht
+        transition: 350
+        use_music_mode: False
+        save_on_change: True
+      192.168.0.125:
+        name: Romy Licht
+        transition: 350
+        use_music_mode: False
+        save_on_change: True
+      192.168.1.248:
+        name: Bad Licht
+        transition: 350
+        use_music_mode: False
+        save_on_change: True
+      192.168.1.243:
+        name: Speisesaal Licht
+        transition: 350
+        use_music_mode: False
+        save_on_change: True
+
+#################################################
+#
+# Schalter
+#
+#################################################
+
+switch:
+  - platform: flux
+    lights:
+      - light.wohnzimmer_licht
+      - light.bad_licht
+      - light.speisesaal_licht
+    name: Fluxer
+    start_time: '5:45'
+    stop_time: '5:30'
+    start_colortemp: 5000
+    sunset_colortemp: 3400
+    stop_colortemp: 3400
+    disable_brightness_adjust: True
+    mode: mired
+  - platform: command_line
+    switches:
+      speisesaal_radio:
+        command_on: "/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.242 fav1"
+        command_off: "/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.242 stop"
+      bad_radio:
+        command_on: "/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.53 fav1"
+        command_off: "/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.53 stop"
+#  - platform: xiaomiplug
+#    host: 192.168.0.81
+#    name: Kaffeemaschine
+#    token: 8735e7bd8f10b45ea6708ba89c1a4f7b
+
+#################################################
+#
+# iTunes und OSMC
+#
+#################################################
+
+media_player:
+  - platform: kodi
+    host: 192.168.1.112
+    name: Kodi
+    port: 80
+    enable_websocket: false
+  - platform: itunes
+    host: 192.168.1.122
+
+#################################################
+#
+# Szenen, Lichter dimmen beim Film gucken. Erstmal deaktiviert
+#
+#################################################
+
+#scene:
+#  - name: Wohnzimmer normal
+#    entities:
+#        light.wohnzimmer_licht:
+#            state: on
+#            transition: 2
+#            brightness: 250
+#            xy_color: [ 0.4448, 0.4066 ]
+#
+#  - name: Wohnzimmer dimmen
+#    entities:
+#        light.wohnzimmer_licht:
+#            state: on
+#            transition: 2
+#            brightness: 10
+#            xy_color: [ 0.5926, 0.3814 ]
+
+
+#################################################
+#
+# Automatismen
+#
+#################################################
+
+automation: !include automations.yaml
+
+#################################################
+#
+# TelegramBot
+#
+#################################################
+
+notify:
+  - name: Telegram
+    platform: telegram
+    chat_id: 19976847
+  - name: Telegram_Haushalt
+    platform: telegram
+    chat_id: -204074268
+
+telegram_bot:
+  platform: polling
+  api_key: 372241811:AAEjswt9XPBRX0MA86Fgw5-ICBWRn8tuqmE
+  allowed_chat_ids:
+    - 19976847
+    - -204074268
+    - 65671155
+
+#################################################
+#
+# Xiaomi Gateway
+#
+#################################################
+
+xiaomi_aqara:
+  gateways:
+    - mac: f0b429cc315f
+      key: 4qmrkdu6abglo8zg
+
+#################################################
+#
+# Device Tracker
+#
+#################################################
+
+device_tracker:
+  - platform: nmap_tracker
+    hosts: 192.168.1.71
+    consider_home: 1800
+    home_interval: 10
+    scan_options: " -Pn --host-timeout 5s "
+    track_new_devices: yes
+
+#################################################
+#
+# Feuchtigkeitsalarme
+#
+#################################################
+
+alert:
+  romy_feuchtigkeit:
+    name: Romys Zimmer müsste mal gelüftet werden!
+    entity_id: binary_sensor.spielzimmer_feucht
+    repeat: 60
+    notifiers:
+      - telegram_haushalt
+  wohnzimmer_feuchtigkeit:
+    name: Das Wohnzimmer müsste mal gelüftet werden!
+    entity_id: binary_sensor.wohnzimmer_feucht
+    repeat: 60
+    notifiers:
+      - telegram_haushalt
+  bad_feuchtigkeit:
+    name: Das Bad müsste mal gelüftet werden!
+    entity_id: binary_sensor.bad_feucht
+    repeat: 60
+    notifiers:
+      - telegram_haushalt
+  schlafzimmer_feuchtigkeit:
+    name: Das Schlafzimmer müsste mal gelüftet werden!
+    entity_id: binary_sensor.schlafzimmer_feucht
+    repeat: 60
+    notifiers:
+      - telegram_haushalt
+#  romy_temperatur:
+#    name: Niedrige Temperatur in Romys Zimmer!
+#    entity_id: binary_sensor.spielzimmer_kalt
+#    repeat: 60
+#    notifiers:
+#      - telegram_haushalt
+#  wohnzimmer_temperatur:
+#    name: Niedrige Temperatur im Wohnzimmer!
+#    entity_id: binary_sensor.wohnzimmer_kalt
+#    repeat: 60
+#    skip_first: true
+#    notifiers:
+#      - telegram_haushalt
+#  bad_temperatur:
+#    name: Niedrige Temperatur im Bad!
+#    entity_id: binary_sensor.bad_kalt
+#    repeat: 60
+#    skip_first: true
+#    notifiers:
+#      - telegram_haushalt
+#  schlafzimmer_temperatur:
+#    name: Niedrige Temperatur im Schlafzimmer!
+#    entity_id: binary_sensor.schlafzimmer_kalt
+#    repeat: 60
+#    skip_first: true
+#    notifiers:
+#      - telegram_haushalt
+
+#################################################
+#
+# Noch mehr Sensoren
+#
+#################################################
+
+binary_sensor:
+  - platform: iss
+  - platform: template
+    sensors:
+      spielzimmer_feucht:
+        value_template: '{{ states.sensor.humidity_158d0001100456.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d0001100456.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        friendly_name: 'Romys Zimmer Luftfeuchte'
+  - platform: template
+    sensors:
+      wohnzimmer_feucht:
+        value_template: '{{ states.sensor.humidity_158d00011172f3.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00011172f3.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        friendly_name: 'Wohnzimmer Luftfeuchte'
+  - platform: template
+    sensors:
+      bad_feucht:
+        value_template: '{{ states.sensor.humidity_158d00012bf206.state | int > 69 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012bf206.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        friendly_name: 'Bad Luftfeuchte'
+  - platform: template
+    sensors:
+      schlafzimmer_feucht:
+        value_template: '{{ states.sensor.humidity_158d00012914cb.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012914cb.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        friendly_name: 'Schlafzimmer Luftfeuchte'
+#  - platform: template
+#    sensors:
+#      spielzimmer_kalt:
+#        value_template: '{{ states.sensor.temperature_158d0001100456.state | int < 17 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") }}'
+#        friendly_name: 'Romys Zimmer Temperatur'
+#  - platform: template
+#    sensors:
+#      wohnzimmer_kalt:
+#        value_template: '{{ states.sensor.temperature_158d00011172f3.state | int < 17 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") }}'
+#        friendly_name: 'Wohnzimmer Temperatur'
+#  - platform: template
+#    sensors:
+#      bad_kalt:
+#        value_template: '{{ states.sensor.temperature_158d00012bf206.state | int < 17 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") }}'
+#        friendly_name: 'Bad Temperatur'
+#  - platform: template
+#    sensors:
+#      schlafzimmer_kalt:
+#        value_template: '{{ states.sensor.temperature_158d00012914cb.state | int < 17 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") }}'
+#        friendly_name: 'Schlafzimmer Temperatur'
+
+#################################################
+#
+# iOS-App
+#
+#################################################
+
+ios:
+
+#################################################
+#
+# Sprechen mit Google
+#
+#################################################
+
+#tts:
+#  - platform: google
+#    language: 'de'
+
+#################################################
+#
+# Google für Kalender
+#
+#################################################
+
+google:
+  client_id: 44558772016-ni3uiijas046ihu81vdsecor4q7ofb9d.apps.googleusercontent.com
+  client_secret: m7vYHKNj4ZfpN5z8HckouJ-O
+
+#################################################
+#
+# Zonen für die Device Tracker
+#
+#################################################
+
+zone:
+  name: Stephans Arbeit
+  latitude: 54.1478358
+  longitude: 11.892381
+  icon: mdi:calendar-multiple
+
+zone 2:
+  name: Jules Arbeit
+  latitude: 54.152141
+  longitude: 11.709278
+  icon: mdi:calendar-multiple
+
+#################################################
+#
+# Eigener OSMC-Menüpunkt
+#
+#################################################
+
+panel_iframe:
+  kodi:
+    title: 'Kodi'
+    url: 'http://192.168.1.239:80'
+    icon: mdi:kodi
+
+#################################################
+#
+# Regenradar, ISS-Radar, usw.
+#
+#################################################
+
+camera:
+  - name: Stephan
+    platform: generic
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.stephansiphone.attributes.latitude }},{{ states.device_tracker.stephansiphone.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:S%7C{{ states.device_tracker.stephansiphone.attributes.latitude }},{{ states.device_tracker.stephansiphone.attributes.longitude }}
+    limit_refetch_to_url_change: true
+  - name: Regenradar
+    platform: generic
+    still_image_url: https://api.sat24.com/animated/DE/rainTMC/3/W_dot_%20Europe%20Standard%20Time/8514913
+  - name: ISS
+    platform: generic
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }}&zoom=5&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }}
+    limit_refetch_to_url_change: true
+#  - name: Jule
+#    platform: generic
+#    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.androide3c5daf46596c063home.attributes.latitude }},{{ states.device_tracker.androide3c5daf46596c063home.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:red%7Clabel:J%7C{{ states.device_tracker.androide3c5daf46596c063home.attributes.latitude }},{{ states.device_tracker.androide3c5daf46596c063home.attributes.longitude }}
+#    limit_refetch_to_url_change: true
+
+shell_command:
+  radiokueche: '/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.242 fav1'
+  radiobad: '/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.53 fav1'
+  radiokuecheaus: '/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.242 stop'
+  radiobadaus: '/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.53 stop'
+
+input_boolean:
+  stephanishome:
+    icon: mdi:home
+    name: Home
+
+
+###############################################
+#                                             
+#         Bluetooth Heizungsthermostate       
+#                                             
+###############################################
+
+climate:
+  - platform: eq3btsmart
+    devices:
+      bad:
+        mac: '00:1A:22:0D:7A:38'
+
+#################################################
+#
+# HomeKit-Start verzögern
+#
+#################################################
+homekit:
+  auto_start: False

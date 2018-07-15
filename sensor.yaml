@@ -1,0 +1,418 @@
+#################################################
+#
+# Datum und Zeit
+#
+#################################################
+
+- platform: time_date
+  display_options:
+    - 'time_date'
+
+##################################################
+#                                                #
+#                 Discogs                        #
+#                                                #
+##################################################
+
+- platform: discogs
+  token: sPWlbMpdcbgOPBUWrUGyuoNhnkqhBpivTwXyvKdy
+
+##################################################
+#                                                #
+#                 Mondphase                      #
+#                                                #
+##################################################
+
+
+- platform: moon
+
+##################################################
+#                                                #
+#                 Kalender                       #
+#                                                #
+##################################################
+
+- platform: template
+  sensors:
+    privat:
+      friendly_name: 'Privat'
+      value_template: '{{ states.calendar.stephaneckermanngooglemailcom.attributes.message}} am {{ as_timestamp(states.calendar.stephaneckermanngooglemailcom.attributes.start_time) | timestamp_custom("%d.%m.%Y, um %H:%M",True) }} Uhr.'
+- platform: template
+  sensors:
+    contacts:
+      friendly_name: 'Kontakte'
+      value_template: '{{ states.calendar.contacts.attributes.message }}'
+- platform: template
+  sensors:
+    geburtstagskalender:
+      friendly_name: 'Geburtstage'
+      value_template: '{{ states.calendar.geburtstagskalender.attributes.message }} hat am {{ as_timestamp(states.calendar.geburtstagskalender.attributes.start_time) | timestamp_custom("%d.%m.",True) }} Geburtstag'
+- platform: template
+  sensors:
+    feiertage:
+      friendly_name: 'Feiertage'
+      value_template: '{{ as_timestamp(states.calendar.feiertage_in_deutschland.attributes.start_time) | timestamp_custom("Am %d.%m.",True) }} ist {{ states.calendar.feiertage_in_deutschland.attributes.message }}'
+- platform: template
+  sensors:
+    muellabfuhr:
+      friendly_name: 'Mülltermine'
+      value_template: '{{ as_timestamp(states.calendar.muellabfuhr.attributes.start_time) | timestamp_custom("Am %d.%m.",True) }} kommt die Müllabfuhr: {{ states.calendar.muellabfuhr.attributes.message }}'
+- platform: systemmonitor
+  resources:
+    - type: since_last_boot
+- platform: template
+  sensors:
+    tonnen_raus:
+      friendly_name: "Mülltonnen raus"
+      value_template: >
+        {% if as_timestamp(states.calendar.muellabfuhr.attributes.start_time) - as_timestamp(strptime(states.sensor.date__time.state, "%Y-%m-%d, %H:%M" ) ) < 21600 and as_timestamp(states.calendar.muellabfuhr.attributes.end_time) > as_timestamp(strptime(states.sensor.date__time.state, "%Y-%m-%d, %H:%M" ) ) %}on{% else %}off{% endif %}
+- platform: template
+  sensors:
+    telegram_geburtstage:
+      friendly_name: "Geburtstagserinnerungen"
+      value_template: >
+        {% if as_timestamp(states.calendar.geburtstagskalender.attributes.start_time) - as_timestamp(strptime(states.sensor.date__time.state, "%Y-%m-%d, %H:%M" ) ) < -36000 and as_timestamp(states.calendar.geburtstagskalender.attributes.end_time) > as_timestamp(strptime(states.sensor.date__time.state, "%Y-%m-%d, %H:%M" ) ) %}on{% else %}off{% endif %}
+- platform: time_date
+  display_options:
+    - 'date_time'
+
+##################################################
+#                                                #
+#            Zeit seit letztem Boot              #
+#                                                #
+##################################################
+
+
+- platform: template
+  sensors:
+    since_last_boot_templated:
+      value_template: >-
+        {%- set slb = states.sensor.since_last_boot.state.split(' ') -%}
+        {%- set count = slb | length -%}
+        {%- set hms = slb[count - 1] -%}
+        {%- set hms_trimmed = hms.split('.')[0] -%}
+        {%- set hms_split = hms_trimmed.split(':') -%}
+        {%- set hours = hms_split[0] | int -%}
+        {%- set minutes = hms_split[1] | int -%}
+        {%- set seconds = hms_split[2] | int -%}
+         {%- if count == 3 -%}
+          {{ slb[0] ~ ' ' ~ slb[1] ~ ' ' }}
+        {%- endif -%}
+        {%- if hours > 0 -%}
+          {%- if hours == 1 -%}
+            1 Stunde
+          {%- else -%}
+            {{ hours }} Stunden
+          {%- endif -%}
+        {%- endif -%}
+        {%- if minutes > 0 -%}
+          {%- if hours > 0 -%}
+            {{ ', ' }}
+          {%- endif -%}
+          {%- if minutes == 1 -%}
+            1 Minuten
+          {%- else -%}
+            {{ minutes }} Minuten
+          {%- endif -%}
+        {%- endif -%}
+        {%- if seconds > 0 -%}
+          {%- if hours > 0 or minutes > 0 -%}
+            {{ ', ' }}
+          {%- endif -%}
+          {%- if seconds == 1 -%}
+            1 Sekunde
+          {%- else -%}
+            {{ seconds }} Sekunden
+          {%- endif -%}
+        {%- endif -%}
+
+##################################################
+#                                                #
+#                 NZBGet                         #
+#                                                #
+##################################################
+
+
+- platform: nzbget
+  host: 192.168.1.112
+  port: 5678
+  username: nzbget
+  password: !secret nzbget
+  monitored_variables:
+    - remaining_size
+    - download_rate
+    - download_paused
+
+##################################################
+#                                                #
+#                 Akkustände                     #
+#                                                #
+##################################################
+
+
+- platform: template
+  sensors:
+    battery_applewatch:
+      unit_of_measurement: '%'
+      value_template: >-
+          {%- if states.device_tracker.apple_watchvonstephan.attributes.battery %}
+              {{ states.device_tracker.apple_watchvonstephan.attributes.battery|round }}
+          {% else %}
+              {{ states.sensor.battery_apple_watchvonstephan.state }}
+          {%- endif %}
+      icon_template: '{%- if is_state("sensor.battery_apple_watchvonstephan", "unknown") %}mdi:battery-unknown{%- elif is_state_attr("device_tracker.apple_watchvonstephan", "battery_status", "Charging") %}mdi:battery-charging{%- elif  states.device_tracker.apple_watchvonstephan.attributes.battery <= 5 %}mdi:battery-outline{%- elif states.device_tracker.apple_watchvonstephan.attributes.battery >= 95 %}mdi:battery{% else %}mdi:battery-{{(states.device_tracker.apple_watchvonstephan.attributes.battery|float / 10)|round*10}}{%- endif %}'
+    battery_badfenster:
+      value_template: '{{ states.binary_sensor.door_window_sensor_158d000153b0e1.attributes.battery_level }} %'
+      friendly_name: Badfenster
+      icon_template: '
+      {%- if is_state("binary_sensor.door_window_sensor_158d000153b0e1", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.binary_sensor.door_window_sensor_158d000153b0e1.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.binary_sensor.door_window_sensor_158d000153b0e1.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.binary_sensor.door_window_sensor_158d000153b0e1.attributes.battery_level|float / 10)|round*10}}
+      {% if states.binary_sensor.door_window_sensor_158d000153b0e1.state == "open"%} Offen {%- else -%} Geschlossen {%- endif -%}
+      {%- endif %}'
+    battery_hygro_wohnzimmer:
+      value_template: '{{ states.sensor.temperature_158d00011172f3.attributes.battery_level }} %'    
+      friendly_name: Hygrometer Wohnzimmer
+      icon_template: '
+      {%- if is_state("sensor.temperature_158d00011172f3", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.sensor.temperature_158d00011172f3.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.sensor.temperature_158d00011172f3.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.sensor.temperature_158d00011172f3.attributes.battery_level|float / 10)|round*10}}
+      {%- endif %}'
+    battery_hygro_romy:
+      value_template: '{{ states.sensor.temperature_158d0001100456.attributes.battery_level }} %'
+      friendly_name: Hygrometer Romys Zimmer
+      icon_template: '
+      {%- if is_state("sensor.temperature_158d0001100456", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.sensor.temperature_158d0001100456.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.sensor.temperature_158d0001100456.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.sensor.temperature_158d0001100456.attributes.battery_level|float / 10)|round*10}}
+      {%- endif %}'
+    battery_hygro_bad:
+      value_template: '{{ states.sensor.temperature_158d00012bf206.attributes.battery_level }} %'
+      friendly_name: Hygrometer Badezimmer
+      icon_template: '
+      {%- if is_state("sensor.temperature_158d00012bf206", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.sensor.temperature_158d00012bf206.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.sensor.temperature_158d00012bf206.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.sensor.temperature_158d00012bf206.attributes.battery_level|float / 10)|round*10}}
+      {%- endif %}'
+    battery_hygro_schlafzimmer:
+      value_template: '{{ states.sensor.temperature_158d00012914cb.attributes.battery_level }} %'
+      friendly_name: Hygrometer Schlafzimmer
+      icon_template: '
+      {%- if is_state("sensor.temperature_158d00012914cb", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.sensor.temperature_158d00012914cb.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.sensor.temperature_158d00012914cb.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.sensor.temperature_158d00012914cb.attributes.battery_level|float / 10)|round*10}}
+      {%- endif %}'
+    battery_bewegungsmelder:
+      value_template: '{{ states.binary_sensor.motion_sensor_158d00010f859c.attributes.battery_level }} %'
+      friendly_name: Bewegungsmelder Flur
+      icon_template: '
+      {%- if is_state("binary_sensor.motion_sensor_158d00010f859c", "unknown") %}
+         mdi:battery-unknown
+      {%- elif  states.binary_sensor.motion_sensor_158d00010f859c.attributes.battery_level <= 5 %}
+         mdi:battery-outline
+      {%- elif states.binary_sensor.motion_sensor_158d00010f859c.attributes.battery_level >= 95 %}
+         mdi:battery
+      {% else %}
+         mdi:battery-{{(states.binary_sensor.motion_sensor_158d00010f859c.attributes.battery_level|float / 10)|round*10}}
+      {%- endif %}'
+
+#    battery_stephansiphone:
+#      unit_of_measurement: '%'
+#      value_template: >-
+#          {%- if states.device_tracker.stephans_iphone.attributes.battery %}
+#              {{ states.device_tracker.stephans_iphone.attributes.battery|round }}
+#          {% else %}
+#              {{ states.sensor.stephans_iphone_battery_level_2.state }}
+#          {%- endif %}
+#      icon_template: '{%- if is_state("sensor.stephans_iphone_battery_level_2", "unknown") %}mdi:battery-unknown{%- elif is_state_attr("device_tracker.stephans_iphone", "battery_status", "Charging") %}mdi:battery-charging{%- elif  states.device_tracker.stephans_iphone.attributes.battery <= 5 %}mdi:battery-outline{%- elif states.device_tracker.stephans_iphone.attributes.battery >= 95 %}mdi:battery{% else %}mdi:battery-{{(states.device_tracker.stephans_iphone.attributes.battery|float / 10)|round*10}}{%- endif %}'
+
+##################################################
+#                                                #
+#                Sonarr                          #
+#                                                #
+##################################################
+
+- platform: sonarr
+  api_key: 4d55fbdcf3d242929ee8bf8a08f6ef87
+  host: 192.168.1.122
+  port: 8989
+  monitored_conditions:
+    - upcoming
+    - wanted
+    - queue
+    - diskspace
+  days: 7
+
+##################################################
+#                                                #
+#               Wetterübersicht                  #
+#                                                #
+##################################################
+
+
+- platform: darksky
+  language: de
+  api_key: 61beaf4f6ab875c7912c9ccfb6054fc4
+  update_interval: '00:05'
+  monitored_conditions:
+     - summary
+     - precip_type
+     - precip_intensity
+     - precip_probability
+     - temperature
+     - apparent_temperature
+     - dew_point
+     - wind_speed
+     - wind_bearing
+     - cloud_cover
+     - humidity
+     - pressure
+     - visibility
+     - hourly_summary
+     - daily_summary
+     - temperature_max
+     - temperature_min
+
+##################################################
+#                                                #
+#                 HA-Versionen                   #
+#                                                #
+##################################################
+
+#https://home-assistant.io/components/sensor.command_line/
+  
+-  platform: command_line
+   name: HASS Installed version
+   command: "head -5 /home/homeassistant/.homeassistant/.HA_VERSION"
+
+#https://www.home-assistant.io/components/sensor.rest/
+  
+- platform: rest
+  resource: https://pypi.python.org/pypi/homeassistant/json
+  name: HASS Latest Version
+  value_template: "{{ value_json.info.version }}"
+  scan_interval: 3600
+    
+
+#################################################
+#                                               #
+#     Sensor für Xiaomi-Versionsverfolgung      #
+#                                               #
+#################################################
+
+#- platform: command_line
+#  name: "Current Xiaomi Version"
+#  scan_interval: 3600
+#  command: python3 -c "import requests; print(requests.get('https://api.github.com/repos/Danielhiversen/homeassistant/commits/master').json()['sha'])"
+#
+#- platform: command_line
+#  name: "Xiaomi Installed version"
+#  scan_interval: 3600
+#  command: "cat /home/homeassistant/.homeassistant/GitHub-Komponenten/Xiaomi-Gateway/.git/FETCH_HEAD | cut -c 1-40"
+
+#- platform: command_line
+#  name: "Commit Xiaomi Version Date"
+#  scan_interval: 3600
+#  command: python3 -c "import requests; print(requests.get('https://api.github.com/repos/Danielhiversen/homeassistant/commits/master').json()['commit']['author']['date'])"
+
+#- platform: template
+#  sensors:
+#    xiaomi_update:
+#      friendly_name: 'Xiaomi Status' 
+#      value_template: '{%- if states.sensor.xiaomi_installed_version.state == states.sensor.current_xiaomi_version.state -%}
+#                           Updated
+#                       {%- else -%}
+#                           NOT Updated
+#                       {%- endif -%}'
+#      icon_template: '{%- if states.sensor.xiaomi_installed_version.state == states.sensor.current_xiaomi_version.state -%}
+#                          mdi:thumb-up-outline
+#                      {%- else -%}
+#                          mdi:thumb-down-outline
+#                      {%- endif -%}'
+
+#
+# Xiaomi-Plug
+#
+
+- platform: command_line
+  name: "Current Xiaomi Plug Version"
+  scan_interval: 3600
+  command: python3 -c "import requests; print(requests.get('https://api.github.com/repos/xavV/xiaomi/commits/master').json()['sha'])"
+
+- platform: command_line
+  name: "Xiaomi Plug Installed version"
+  scan_interval: 3600
+  command: "cat /home/homeassistant/.homeassistant/GitHub-Komponenten/Xiaomi-Plug/.git/FETCH_HEAD | cut -c 1-40"
+
+- platform: command_line
+  name: "Commit Xiaomi Version Date"
+  scan_interval: 3600
+  command: python3 -c "import requests; print(requests.get('https://api.github.com/repos/xavV/xiaomi/commits/master').json()['commit']['author']['date'])"
+
+- platform: template
+  sensors:
+    xiaomiplug_update:
+      friendly_name: 'Xiaomi Plug Status'
+      value_template: '{%- if states.sensor.xiaomi_plug_installed_version.state == states.sensor.current_xiaomi_plug_version.state -%}
+                           Updated
+                       {%- else -%}
+                           NOT Updated
+                       {%- endif -%}'
+      icon_template: '{%- if states.sensor.xiaomi_plug_installed_version.state == states.sensor.current_xiaomi_plug_version.state -%}
+                          mdi:thumb-up-outline
+                      {%- else -%}
+                          mdi:thumb-down-outline
+                      {%- endif -%}'
+
+#
+#
+#
+#
+#
+
+- platform: luftdaten
+  sensorid: 3706
+  monitored_conditions:
+    - P1
+    - P1
+- platform: luftdaten
+  sensorid: 3707
+  monitored_conditions:
+    - temperature
+    - humidity
+
+
+##############################################
+#                                            #
+#            DWD-Wetterwarnungen             #
+#                                            #
+##############################################
+
+
+- platform: dwd_weather_warnings
+  region_name: Nienhagen&lk=Kreis%20Rostock%20-%20Küste

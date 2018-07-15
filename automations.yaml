@@ -1,0 +1,531 @@
+############################################################################
+#                                                                          #
+#                  Automation für vergessene Lichter                       #
+#                                                                          #
+############################################################################
+
+- id: allewegaberlichteran
+  alias: "Lichter vergessen"
+  trigger:
+    platform: zone
+    entity_id: device_tracker.stephansiphone
+    zone: zone.home
+    event: leave
+  condition:
+    condition: or
+    conditions:
+      - condition: state
+        entity_id: light.wohnzimmer_licht
+        state: 'on'
+      - condition: state
+        entity_id: light.speisesaal_licht
+        state: 'on'
+      - condition: state
+        entity_id: light.bad_licht
+        state: 'on'
+      - condition: state
+        entity_id: light.romy_licht
+        state: 'on'
+  action:
+    - service: notify.telegram_haushalt
+      data:
+        message: 'Ohje, Lichter sind noch an!'
+        data:
+          keyboard: 
+            - '/ausmachen'
+- id: lichterbeiabwesenheitaus
+  alias: "Lichter bei Abwesenheit aus"
+  trigger:
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: '/ausmachen'
+  action:
+    - service: light.turn_off
+      entity_id: light.wohnzimmer_licht, light.speisesaal_licht, light.bad_licht, light.romy_licht
+
+############################################################################
+#                                                                          #
+#                  Automation für Erinnerung Mülltonnen                    #
+#                                                                          #
+############################################################################
+
+- id: 'telegramtonnenraus'
+  alias: 'Telegram Erinnerung an Muelltonnen'
+  trigger:
+  - entity_id: sensor.tonnen_raus
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.telegram_haushalt
+    data_template:
+      message: 'Morgen kommt die Müllabfuhr: {{ states.calendar.muellabfuhr.attributes.message }}. Soll ich euch nochmal erinnern?'
+      data:
+          inline_keyboard:
+          - 'In 30 Minuten:/30m, In 1 Stunde:/1h, In 3 Stunden:/3h'
+          - 'Ist erledigt. Die Mülltonnen sind rausgestellt:/removekeyboard'
+
+- id: 'telegramremoveinline'
+  alias: 'Telegram callback to remove keyboard'
+  hide_entity: false
+  trigger:
+    platform: event
+    event_type: telegram_callback
+    event_data:
+      data: '/removekeyboard'
+  action:
+  - service: telegram_bot.answer_callback_query
+    data_template:
+      callback_query_id: '{{ trigger.event.data.id }}'
+      message: 'Ok'
+  - service: telegram_bot.edit_replymarkup
+    data_template:
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      chat_id: -204074268
+      inline_keyboard: []
+
+- id: 'telegramrepeat30m'
+  alias: 'Telegram callback to repeat message in 30 minutes'
+  hide_entity: false
+  trigger:
+    platform: event
+    event_type: telegram_callback
+    event_data:
+      data: '/30m'
+  action:
+  - service: telegram_bot.answer_callback_query
+    data_template:
+      callback_query_id: '{{ trigger.event.data.id }}'
+      message: 'Ok, ich erinnere euch nochmal in 30 Minuten'
+  - service: telegram_bot.edit_replymarkup
+    data_template:
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      chat_id: -204074268
+      inline_keyboard: []
+  - delay: '00:30:00'
+  - service: notify.telegram_haushalt
+    data_template:
+      message: '{{ trigger.event.data.message.text }}'
+      data:
+        inline_keyboard:
+          - 'In 30 Minuten:/30m, In 1 Stunde:/1h, In 3 Stunden:/3h'
+          - 'Ist erledigt. Die Mülltonnen sind rausgestellt:/removekeyboard'
+
+- id: 'telegramrepeat1h'
+  alias: 'Telegram callback to repeat message in 1 hour'
+  hide_entity: false
+  trigger:
+    platform: event
+    event_type: telegram_callback
+    event_data:
+      data: '/1h'
+  action:
+  - service: telegram_bot.answer_callback_query
+    data_template:
+      callback_query_id: '{{ trigger.event.data.id }}'
+      message: 'Ok, ich erinnere euch nochmal in 1 Stunde'
+  - service: telegram_bot.edit_replymarkup
+    data_template:
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      chat_id: -204074268
+      inline_keyboard: []
+  - delay: '01:00:00'
+  - service: notify.telegram_haushalt
+    data_template:
+      message: '{{ trigger.event.data.message.text }}'
+      data:
+        inline_keyboard:
+          - 'In 30 Minuten:/30m, In 1 Stunde:/1h, In 3 Stunde:/3h'
+          - 'Ist erledigt. Die Mülltonnen sind rausgestellt:/removekeyboard'
+
+- id: 'telegramrepeat3h'
+  alias: 'Telegram callback to repeat message in 3 hour'
+  hide_entity: false
+  trigger:
+    platform: event
+    event_type: telegram_callback
+    event_data:
+      data: '/3h'
+  action:
+  - service: telegram_bot.answer_callback_query
+    data_template:
+      callback_query_id: '{{ trigger.event.data.id }}'
+      message: 'Ok, ich erinnere euch nochmal in 3 Stunden'
+  - service: telegram_bot.edit_replymarkup
+    data_template:
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      chat_id: -204074268
+      inline_keyboard: []
+  - delay: '03:00:00'
+  - service: notify.telegram_haushalt
+    data_template:
+      message: '{{ trigger.event.data.message.text }}'
+      data:
+        inline_keyboard:
+          - 'In 30 Minuten:/30m, In 1 Stunde:/1h, In 3 Stunden:/3h'
+          - 'Ist erledigt. Die Mülltonnen sind rausgestellt:/removekeyboard'
+
+############################################################################
+#                                                                          #
+#                  Automation für Erinnerung Geburtstag                    #
+#                                                                          #
+############################################################################
+
+- id: 'telegramgeburtstage'
+  alias: 'Telegram Erinnerung an Geburtstage'
+  trigger:
+  - entity_id: sensor.telegram_geburtstage
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.telegram_haushalt
+    data_template:
+      message: 'Heute hat {{ states.calendar.geburtstagskalender.attributes.message }} Geburtstag.'
+
+############################################################################
+#                                                                          #
+#       Media-Player Automatismen (Licht aus, wenn Film läuft)             #
+#                                                                          #
+############################################################################
+- id: mediaplayerpaused
+  alias: "Media player paused/stopped"
+  trigger:
+    - platform: state
+      entity_id: media_player.kodi
+      from: 'playing'
+      to: 'idle'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  action:
+    - service: scene.turn_on
+      entity_id: scene.wohnzimmer_normal
+
+- id: mediaplayerplaying
+  alias: "Media player playing"
+  trigger:
+    - platform: state
+      entity_id: media_player.kodi
+      to: 'playing'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  action:
+    - service: light.turn_on
+      entity_id: light.wohnzimmer_licht
+    - service: scene.turn_on
+      entity_id: scene.wohnzimmer_dimmen
+
+##########################################################################
+#                                                                        #
+#          Wohnzimmerlicht aus, wenn Balkontür auf ist                   # auskommentiert, da Sensor jetzt im Bad
+#                                                                        #
+##########################################################################
+
+#- id: balkonoffen
+#  alias: "Balkon offen"
+#  trigger:
+#    - platform: state
+#      entity_id: binary_sensor.door_window_sensor_158d000153b0e1
+#      to: 'on'
+#  condition:
+#    condition: or
+#    conditions:
+#      - condition: state
+#        entity_id: sun.sun
+#        state: 'below_horizon'
+#      - condition: state
+#        entity_id: sensor.dark_sky_precip_intensity
+#        state: 'rain'
+#  action:
+#    - service: light.turn_off
+#      entity_id: light.wohnzimmer_licht
+#- id: balkonzu
+#  alias: "Balkon geschlossen"
+#  trigger:
+#    - platform: state
+#      entity_id: binary_sensor.door_window_sensor_158d000153b0e1
+#      from: 'on'
+#      to: 'off'
+#  action:
+#    - service: light.turn_on
+#      entity_id: light.wohnzimmer_licht
+
+#########################################################################
+#                                                                       #
+#                    Heizungen aus                                      #
+#                                                                       #
+#########################################################################
+
+
+- id: heizungaus_bad
+  alias: "Heizung aus im Bad"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.door_window_sensor_158d000153b0e1
+      from: 'off'
+      to: 'on'
+  action:
+    - service: climate.set_operation_mode
+      data:
+        entity_id: climate.bad
+        operation_mode: 'off'
+
+- id: heizungan_bad
+  alias: "Heizung an im Bad"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.door_window_sensor_158d000153b0e1
+      from: 'on'
+      to: 'off'
+  action:
+    - service: climate.set_operation_mode
+      data:
+        entity_id: climate.wohnzimmerfenster
+        operation_mode: 'auto'
+
+#########################################################################
+#                                                                       #
+#                    Nachtlicht im Flur                                 #
+#                                                                       #
+#########################################################################
+
+- id: nachtlicht_flur
+  alias: "Nachtlicht bei Bewegung im Flur"
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.illumination_f0b429cc315f
+      value_template: '{{states.sensor.illumination_f0b429cc315f.state | int}}'
+      below: 400
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001e518a2
+      from: 'off'
+      to: 'on'
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.gateway_light_f0b429cc315f
+      color_name: orangered
+      brightness: 75
+- id: nachtlichtaus_flur
+  alias: "Nachtlicht aus im Flur"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001e518a2
+      to: 'off'
+      for:
+        minutes: 0
+        seconds: 15
+  action:
+    service: light.turn_off
+    data:
+      entity_id: light.gateway_light_f0b429cc315f
+
+#########################################################################
+#                                                                       #
+#                    Nachtlicht im Schlafzimmer                         #
+#                                                                       #
+#########################################################################
+
+- id: nachtlicht_schlafzimmer
+  alias: "Nachtlicht bei Bewegung im Schlafzimmer"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00010f859c
+      from: 'off'
+      to: 'on'
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.bettlicht
+- id: nachtlichtaus_schlafzimmer
+  alias: "Nachtlicht aus im Schlafzimmer"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d00010f859c
+      to: 'off'
+      for:
+        minutes: 0
+        seconds: 15
+  action:
+    service: light.turn_off
+    data:
+      entity_id: light.bettlicht
+
+#########################################################################
+#                                                                       #
+#                Benachrichtigung bei Systemupdates                     #
+#                                                                       #
+#########################################################################
+
+- id: update
+  alias: "Update Benachrichtigungen"
+  trigger:
+    platform: state
+    entity_id: sensor.installierte_HA_Version
+  action:
+    service: notify.telegram
+    data:
+      message: 'Es gibt eine neue HA-Version: {{ states.sensor.installierte_version.state }}!'
+#      platform: state
+#      entity_id: updater.updater
+#  action:
+#    service: notify.telegram
+#    data:
+#      message: 'Es gibt eine neue HASS-Version!'
+
+########################################################################
+#                                                                      #
+#         Fluxer Lichtanpassung beim HASS-Neustart aktivieren          #
+#                                                                      #
+########################################################################
+
+- id: fluxerstart
+  alias: "Fluxer Start"
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    service: switch.turn_on
+    entity_id:
+      - switch.fluxer
+
+########################################################################
+#                                                                      #
+#               Kaffemaschine morgens an- und ausschalten              #
+#                                                                      #
+########################################################################
+
+- id: kaffeinderwoche
+  alias: "Kaffee in der Woche"
+  trigger:
+    - platform: time
+      at: '05:55:00'
+  condition:
+    condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+    service: switch.turn_on
+    entity_id:
+      - switch.kaffeemaschine
+
+- id: kaffeeamwochenende
+  alias: "Kaffee am Wochenende"
+  trigger:
+    - platform: time
+      at: '07:00:00'
+  condition:
+    condition: time
+    weekday:
+    - sat
+    - sun
+  action:
+    service: switch.turn_on
+    entity_id:
+      - switch.kaffeemaschine
+
+- id: kaffeemaschineaus
+  alias: "Kaffeemaschine aus"
+  trigger:
+    - platform: time
+      at: '07:10:00'
+  action:
+    service: switch.turn_off
+    entity_id:
+      - switch.kaffeemaschine
+
+######################################################
+#                                                    #
+#               Morgends Radio an                    #
+#                                                    # 
+######################################################
+
+- id: Radioanwoche
+  alias: "Radio an Wochentags"
+  trigger: 
+    - platform: time
+      at: '06:10:00'
+  condition:
+    condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+    - service: shell_command.radiokueche
+    - service: shell_command.radiobad
+
+- id: Radioanwochenende
+  alias: "Radio an Wochenende"
+  trigger:
+    - platform: time
+      at: '07:00:00'
+  condition:
+    condition: time
+    weekday:
+    - sat
+    - sun
+  action:
+    - service: shell_command.radiokueche
+    - service: shell_command.radiobad
+
+- id: Radioauswoche
+  alias: "Radio aus Wochentags"
+  trigger:
+    - platform: time
+      at: '08:00:00'
+  condition:
+    condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+    - service: shell_command.radiokuecheaus
+    - service: shell_command.radiobadaus
+
+#######################################################
+#                                                     #
+#             Lichtwecker Schlafzimmer                #
+#                                                     #
+#######################################################
+
+- id: Lichtwecker
+  alias: "Lichtwecker Schlafzimmer"
+  trigger:
+    platform: time
+    at: "06:30:00"
+  action:
+    service: light.turn_on
+    entity_id: light.bettlicht
+    data:
+      transition: 900
+
+#######################################################
+#                                                     #
+#      HomeKit mit 5 Minuten Delay starten            #
+#                                                     #
+#######################################################
+
+- id: Homekitstart
+  alias: "HomeKit Start"
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    - delay: 00:05
+    - service: homekit.start

@@ -1,0 +1,65 @@
+- cal_id: stephan.eckermann@googlemail.com
+  entities:
+  - device_id: stephaneckermanngooglemailcom
+    name: Privater Google-Kalender
+    track: true
+
+- cal_id: 7fkmd6j5d2fe2kcj1kbepcpd5c@group.calendar.google.com
+  entities:
+  - device_id: marathonstaffel
+    name: Marathonstaffel
+    track: false
+
+- cal_id: 9dhtu8qaqde61t959n9cqscjf8@group.calendar.google.com
+  entities:
+  - device_id: facebook_birthdays
+    name: Facebook Birthdays
+    track: false
+
+- cal_id: in4era1tggcp7gmqd2ag1nnrfk@group.calendar.google.com
+  entities:
+  - device_id: hm_in_berlin
+    name: hm in berlin
+    track: false
+
+- cal_id: cf5p4e8d7747q6fdmqmfjrkhg79o5jib@import.calendar.google.com
+  entities:
+  - device_id: friends_birthdays
+    name: Friends' Birthdays
+    track: false
+
+- cal_id: ojsmtcegjmp2c14ap7k9r9oa98@group.calendar.google.com
+  entities:
+  - device_id: hm
+    name: hm
+    track: false
+
+- cal_id: '#contacts@group.v.calendar.google.com'
+  entities:
+  - device_id: contacts
+    name: Contacts
+    track: false
+
+- cal_id: de.german#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: feiertage_in_deutschland
+    name: Feiertage in Deutschland
+    track: true
+
+- cal_id: e_2_de#weeknum@group.v.calendar.google.com
+  entities:
+  - device_id: week_numbers
+    name: Week Numbers
+    track: false
+
+- cal_id: 9jq26uvig3cpmvspgahsep4cg0@group.calendar.google.com
+  entities:
+  - device_id: geburtstagskalender
+    name: Geburtstagskalender
+    track: true
+
+- cal_id: c6snv4miavtjb6jp2f325lc50g@group.calendar.google.com
+  entities:
+  - device_id: muellabfuhr
+    name: Müllabfuhr
+    track: true
