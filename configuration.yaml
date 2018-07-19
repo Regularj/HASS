@@ -360,22 +360,22 @@ binary_sensor:
   - platform: template
     sensors:
       spielzimmer_feucht:
-        value_template: '{{ states.sensor.humidity_158d0001100456.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d0001100456.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        value_template: '{{ states.sensor.humidity_158d0001100456.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d0001100456.state | int > states.sensor.dark_sky_humidity.state | int and states.sensor.temperature_158d0001100456.state | int < 17 }}'
         friendly_name: 'Romys Zimmer Luftfeuchte'
   - platform: template
     sensors:
       wohnzimmer_feucht:
-        value_template: '{{ states.sensor.humidity_158d00011172f3.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00011172f3.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        value_template: '{{ states.sensor.humidity_158d00011172f3.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00011172f3.state | int > states.sensor.dark_sky_humidity.state | int and states.sensor.temperature_158d00011172f3.state | int < 17 }}'
         friendly_name: 'Wohnzimmer Luftfeuchte'
   - platform: template
     sensors:
       bad_feucht:
-        value_template: '{{ states.sensor.humidity_158d00012bf206.state | int > 69 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012bf206.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        value_template: '{{ states.sensor.humidity_158d00012bf206.state | int > 69 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012bf206.state | int > states.sensor.dark_sky_humidity.state | int and states.sensor.temperature_158d00012bf206.state | int < 17 }}'
         friendly_name: 'Bad Luftfeuchte'
   - platform: template
     sensors:
       schlafzimmer_feucht:
-        value_template: '{{ states.sensor.humidity_158d00012914cb.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012914cb.state | int > states.sensor.dark_sky_humidity.state | int }}'
+        value_template: '{{ states.sensor.humidity_158d00012914cb.state | int > 60 and is_state("group.familie", "home") and is_state("sun.sun", "above_horizon") and states.sensor.humidity_158d00012914cb.state | int > states.sensor.dark_sky_humidity.state | int and states.sensor.temperature_158d00012914cb.state | int < 17 }}'
         friendly_name: 'Schlafzimmer Luftfeuchte'
 #  - platform: template
 #    sensors:

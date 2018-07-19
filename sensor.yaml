@@ -416,3 +416,39 @@
 
 - platform: dwd_weather_warnings
   region_name: Nienhagen&lk=Kreis%20Rostock%20-%20Küste
+
+##############################################
+#                                            #
+#            Systemmonitor                   #
+#                                            #
+##############################################
+
+- platform: systemmonitor
+  resources:
+    - type: disk_use_percent
+      arg: /home
+    - type: disk_free
+      arg: /home
+    - type: memory_use_percent
+    - type: swap_use_percent
+    - type: load_15m
+    - type: network_in
+      arg: eth0
+    - type: network_out
+      arg: eth0
+    - type: packets_in
+      arg: eth0
+    - type: packets_out
+      arg: eth0
+    - type: processor_use
+    - type: since_last_boot
+    - type: last_boot
+    - type: ipv4_address
+      arg: eth0
+
+
+- platform: command_line
+  name: CPU Temperatur
+  command: 'cat /sys/class/thermal/thermal_zone0/temp'
+  unit_of_measurement: '°C'
+  value_template: '{{ value | multiply(0.001) | round(1) }}'

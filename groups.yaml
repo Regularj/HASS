@@ -132,11 +132,29 @@ sonarr:
   - sensor.sonarr_wanted
   - sensor.sonarr_queue
   - sensor.sonarr_disk_space
+systemmonitor:
+  name: Systemmonitor
+  entities:
+  - sensor.disk_use_percent
+  - sensor.disk_free
+  - sensor.memory_use_percent
+  - sensor.swap_use_percent
+  - sensor.load_15m
+  - sensor.network_in_eth0
+  - sensor.network_out_eth0
+  - sensor.packets_in_eth0
+  - sensor.packets_out_eth0
+  - sensor.processor_use_eth0
+  - sensor.ipv4_address_eth0
+  - sensor.since_last_boot
+  - sensor.last_boot
+  - sensor.cpu_temperatur
 hintergrundtechnik:
   name: Technik
   view: true
   entities:
   - group.hintergrund
+  - group.systemmonitor
   - group.nzbget
   - group.sonarr
   - group.media
