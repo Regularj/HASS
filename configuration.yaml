@@ -46,7 +46,7 @@ config:
 
 http:
   # Uncomment this to add a password (recommended!)
-  # api_password: !secret http
+  api_password: !secret http_password
   # Uncomment this if you are using SSL or running in Docker etc
   # base_url: example.duckdns.org:8123
 
@@ -465,7 +465,7 @@ panel_iframe:
 camera:
   - name: Stephan
     platform: generic
-    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.stephansiphone.attributes.latitude }},{{ states.device_tracker.stephansiphone.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:S%7C{{ states.device_tracker.stephansiphone.attributes.latitude }},{{ states.device_tracker.stephansiphone.attributes.longitude }}
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.stephans_iphone.attributes.latitude }},{{ states.device_tracker.stephans_iphone.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:S%7C{{ states.device_tracker.stephans_iphone.attributes.latitude }},{{ states.device_tracker.stephans_iphone.attributes.longitude }}
     limit_refetch_to_url_change: true
   - name: Regenradar
     platform: generic
@@ -474,10 +474,10 @@ camera:
     platform: generic
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }}&zoom=5&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }}
     limit_refetch_to_url_change: true
-#  - name: Jule
-#    platform: generic
-#    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.androide3c5daf46596c063home.attributes.latitude }},{{ states.device_tracker.androide3c5daf46596c063home.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:red%7Clabel:J%7C{{ states.device_tracker.androide3c5daf46596c063home.attributes.latitude }},{{ states.device_tracker.androide3c5daf46596c063home.attributes.longitude }}
-#    limit_refetch_to_url_change: true
+  - name: Jule
+    platform: generic
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.galaxyj52016.attributes.latitude }},{{ states.device_tracker.galaxyj52016.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:red%7Clabel:J%7C{{ states.device_tracker.galaxyj52016.attributes.latitude }},{{ states.device_tracker.galaxyj52016.attributes.longitude }}
+    limit_refetch_to_url_change: true
 
 shell_command:
   radiokueche: '/home/homeassistant/.homeassistant/GitHub-Komponenten/Samsung-Multiroom/MultiRoom.sh 192.168.1.242 fav1'

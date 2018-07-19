@@ -13,6 +13,13 @@ default_view:
   - group.fenstertuer
   - group.familie
   - updater.updater
+familienmitglieder:
+  name: Familienmitglieder
+  view: true
+  entities:
+  - group.familie
+  - camera.stephan
+  - camera.jule
 heizung:
   name: Heizungen
   entities:
@@ -67,7 +74,6 @@ lichter:
   - light.bad_licht
   - light.speisesaal_licht
   - light.bettlicht
-
 kalender:
   name: Kalender
   entities:
@@ -85,7 +91,6 @@ wetterzsfg:
   entities:
   - sensor.dark_sky_summary
   - sensor.dark_sky_temperature
-  - camera.regenradar
 fenstertuer:
   name: "Fenster und Türen"
   entities:
@@ -203,6 +208,7 @@ wetterdetails:
   - group.wind
   - group.temperaturen
   - group.niederschlag
+  - camera.regenradar
   - group.weltall
 wetterjetzt:
   name: Wetterstatus
