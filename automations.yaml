@@ -478,8 +478,8 @@
     - sat
     - sun
   action:
-    - service: shell_command.radiokueche
-    - service: shell_command.radiobad
+    - service: shell_command.radiokueche_we
+    - service: shell_command.radiobad_we
 
 - id: Radioauswoche
   alias: "Radio aus Wochentags"
